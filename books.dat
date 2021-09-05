@@ -1,12 +1,1 @@
-[
-    {
-        "id": 2,
-        "name": "dsadas",
-        "description": "dada",
-        "isbn": "asdasd",
-        "page_count": "3",
-        "issued": false,
-        "author": "dsadas",
-        "year": 2021
-    }
-]
+[]

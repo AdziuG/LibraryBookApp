@@ -1,3 +1,5 @@
+
+
 class Book:
     """Create book object with attributes"""
     def __init__(self, id, name, description, isbn, page_count, issued, author, year):
@@ -9,6 +11,20 @@ class Book:
         self.description = description
         self.name = name
         self.id = id
+
+    # set unique id while adding new book
+    def set_id(self, id, books):
+        check_id = False
+        max_id = 0
+        for book in books:
+            if book.id == id:
+                check_id = True
+            if max_id < book.id:
+                max_id = book.id
+        if check_id is False:
+            self.id = id
+        else:
+            self.id = max_id + 1
 
     def to_dict(self):
         """Attributes of object copy to dictionary"""
