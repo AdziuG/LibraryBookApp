@@ -4,6 +4,10 @@ from book import Book
 
 # Loading books
 def load_books():
+    """
+    Function load data from books.dat file. Every item change from json format to object and keep in variable.
+    :return:
+    """
     try:
         file = open('books.dat', 'r')
         books_dict = json.loads(file.read())
@@ -18,6 +22,11 @@ def load_books():
 
 
 def save_books(books):
+    """
+    Function saves book to books.dat using json format
+    :param books: List of all books
+    :return:
+    """
     json_books = []
     for book in books:
         json_books.append(book.to_dict())
@@ -59,6 +68,11 @@ def get_unissued_books():
 
 
 def find_book(book_id):
+    """
+    Using loop and iterate though books variable to find specific id.
+    :param book_id: searching book
+    :return:
+    """
     books = load_books()
     for book in books:
         if book.id == int(book_id):

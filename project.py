@@ -9,8 +9,11 @@ from add_book_dialog import Ui_Dialog as Ui_Add_Dialog
 import store_functions as lib
 
 
-# DELETE DIALOG
+# DELETE WINDOW
 class Delete_Dialog(QDialog):
+    """
+    In this window display information about delete specific item.
+    """
     def __init__(self, parent=None):
         super(Delete_Dialog, self).__init__(parent)
         self.ui = Ui_Delete_Dialog()
@@ -19,8 +22,12 @@ class Delete_Dialog(QDialog):
         self.ui.buttonBox.rejected.connect(self.reject)
 
 
-# EDIT DIALOG
+# EDIT WINDOW
 class EditDialog(QDialog):
+    """
+    Additional window displays when user clicked edit button.
+    It's window where user could change specific item.
+    """
     def __init__(self):
         super(EditDialog, self).__init__()
         self.ui = Ui_Edit_Dialog()
@@ -29,8 +36,12 @@ class EditDialog(QDialog):
         self.ui.buttonBox.rejected.connect(self.reject)
 
 
-# ADD DIALOG
+# ADD WINDOW
 class AddDialog(QDialog):
+    """
+    Additional window displays when user clicked add button.
+    It's window where user could add new book.
+    """
     def __init__(self):
         super(AddDialog, self).__init__()
         self.ui = Ui_Add_Dialog()
@@ -39,28 +50,33 @@ class AddDialog(QDialog):
         self.ui.buttonBox.rejected.connect(self.reject)
 
 
-# MAIN WINDOW
+# MAIN WINDOW OF APPLICATION
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
         self.setupUi(self)
-        self.new_book_btn.pressed.connect(self.show_add_dialog)
+        self.new_book_btn.pressed.connect(self.show_add_dialog)  # pressed button emits signal to func shows window with form to add new book
         self.load_issued_table()
         self.load_unissued_table()
         self.load_all_books_table()
 
+        # Clicked buttons responsible for managing issued book table
         self.edit_issued.clicked.connect(lambda: self.edit_book(self.issued_books_table))
         self.delete_issued.clicked.connect(lambda: self.delete_book(self.issued_books_table))
         self.refresh_issued.clicked.connect(self.load_issued_table)
 
+        # Clicked buttons responsible for manage unissued book table
         self.edit_unissued.clicked.connect(lambda: self.edit_book(self.unissued_books_table))
         self.delete_unissued.clicked.connect(lambda: self.delete_book(self.unissued_books_table))
         self.refresh_unissued.clicked.connect(self.load_unissued_table)
 
-        self.refresh_btn.clicked.connect(self.load_all_books_table)
+        self.refresh_btn.clicked.connect(self.load_all_books_table)  # btn responsible for refreshing view in the table
         self.search_btn.clicked.connect(self.search_book)
 
     def save_existing_book(self, ui):
+        """
+        Method create dictionary type. Gather information from form in GUI and pass it to update book method
+        """
         book = {
             'id': int(ui.id_spinbox.text()),
             'name': ui.name_input.text(),
@@ -74,7 +90,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         lib.update_book(book)
 
     def edit_book(self, table):
+        """
+        Method get information from table (using current selected row search specific id).
+        After that load information to form in GUI. After that call slot and passes changed data to save existing func.
+        :param table could be issued table or unissued table
+        """
         selected_row = table.currentRow()
+        # if nothing is selected then selected row = -1
         if selected_row != -1:
             book_id = int(table.item(selected_row, 0).text())
             book = lib.find_book(book_id)
@@ -96,7 +118,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.load_unissued_table()
 
     def save_new_book(self, ui):
-        # dictionary to store information
+        """
+        Create dictionary to store information. Gets data from GUI form.
+        Call metgod add books and passes created dict.
+        :param ui:
+        :return:
+        """
         new_book = {
             'id': int(ui.id_spinbox.text()),
             'name': ui.name_input.text(),
@@ -112,15 +139,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if new_book[attr] is None or str(new_book[attr]) == "":
                 return False
         lib.add_books(new_book)
-        self.load_issued_table()
-        self.load_unissued_table()
+        self.load_issued_table()    # update issued table
+        self.load_unissued_table()  # update unissued table
 
     def search_book(self):
+        """
+        Method responsible for searching book. Book is search by id. ID is unique.
+        To find specific book using find_book func.
+        It's slot func. Signal emits search button.
+        :return:
+        """
         if self.search_input.text() != "":
             book = lib.find_book(int(self.search_input.text()))
             if book != None:
                 self.search_table.setRowCount(1)
                 book_dict = book.to_dict()
+                # book dict store information about specific book in dictionary
+                # loop go through attributes in book and place them to table using setItem.
                 for book_index, attr in enumerate(book_dict):
                     self.search_table.setItem(
                         0, book_index, QTableWidgetItem(str(book_dict[str(attr)])))
@@ -128,6 +163,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                         Qt.ItemIsSelectable | Qt.ItemIsEnabled)
 
     def delete_book(self, table):
+        """
+        Method delete selected book. This is slot func. Signal emits delete button.
+        :param table:
+        :return:
+        """
         selected_row = table.currentRow()
         if selected_row != -1:
             book_id = int(table.item(selected_row, 0).text())
@@ -138,8 +178,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.load_unissued_table()
 
     def load_issued_table(self):
+        """
+        Loads data to issued table
+        :return:
+        """
         books = lib.get_issued_books()
-        self.issued_books_table.setRowCount((len(books)))
+        self.issued_books_table.setRowCount((len(books)))  # set rows in this table using length of list of issued book
         for index, book in enumerate(books):
             book = book.to_dict()
             for book_index, attr in enumerate(book):
@@ -147,8 +191,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.issued_books_table.item(index, book_index).setFlags((Qt.ItemIsSelectable | Qt.ItemIsEnabled))
 
     def load_unissued_table(self):
+        """
+        Load data to unissued table
+        :return:
+        """
         books = lib.get_unissued_books()
-        self.unissued_books_table.setRowCount((len(books)))
+        self.unissued_books_table.setRowCount((len(books)))  # set rows in this table using length of list of unissued book
         for index, book in enumerate(books):
             book = book.to_dict()
             for book_index, attr in enumerate(book):
@@ -156,8 +204,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.unissued_books_table.item(index, book_index).setFlags((Qt.ItemIsSelectable | Qt.ItemIsEnabled))
 
     def load_all_books_table(self):
+        """
+        Method responsible to load data to All Books tab.
+        :return:
+        """
         books = lib.load_books()
-        self.all_books_table.setRowCount((len(books)))
+        self.all_books_table.setRowCount((len(books)))  # set rows in this table using length of list all books
         for index, book in enumerate(books):
             book = book.to_dict()
             for book_index, attr in enumerate(book):
@@ -171,6 +223,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
 app = QApplication([])
+# load stylesheet
 style_sheet = open("dark_orange/style.qss", 'r')
 
 with style_sheet:
