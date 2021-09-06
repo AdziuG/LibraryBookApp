@@ -1,3 +1,4 @@
+
 # LibraryBookApp
 
 # Description
@@ -12,11 +13,10 @@
     Update an entry
 
     Delete an entry
-
-    Close the program
     
 # Screenshots
-
+![Zrzut ekranu (7)](https://user-images.githubusercontent.com/63744978/132199239-3506d22c-1b58-48dc-bf01-5b9fdb1fbda6.png)
+![Zrzut ekranu (8)](https://user-images.githubusercontent.com/63744978/132199270-768a0444-c49a-459c-b177-ea000f07babf.png)
 
 
 # TO DO:
